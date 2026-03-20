@@ -1,0 +1,2658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniPlansa Online</title>
+<style>
+  /* CSS */
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e2e0d8;
+    --border2: #ccc9bf;
+    --text: #1a1917;
+    --text2: #6b6860;
+    --text3: #a8a59e;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --accent2: #16a34a;
+    --accent2-light: #f0fdf4;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --warn: #d97706;
+    --warn-light: #fffbeb;
+    --purple: #7c3aed;
+    --purple-light: #f5f3ff;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.1), 0 2px 6px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.07);
+    --radius: 10px;
+    --radius-sm: 6px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- TOPBAR ---- */
+  #topbar {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  #topbar .logo {
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -.3px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-right: 8px;
+  }
+  #topbar .logo svg { color: var(--accent); }
+  .tab-btn {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid transparent;
+    background: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn:hover { background: var(--surface2); color: var(--text); }
+  .tab-btn.active { background: var(--accent-light); color: var(--accent); border-color: #bfcfff; }
+  .spacer { flex: 1; }
+  .icon-btn {
+    width: 34px; height: 34px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text2);
+    transition: all .15s;
+  }
+  .icon-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .btn {
+    height: 34px; padding: 0 14px;
+    border: none; border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; transition: all .15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-danger { background: var(--danger-light); color: var(--danger); border: 1px solid #fecaca; }
+  .btn-danger:hover { background: #fee2e2; }
+
+  /* ---- MAIN LAYOUT ---- */
+  #main { flex: 1; display: flex; overflow: hidden; }
+
+  /* ---- SIDEBAR ---- */
+  #sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sidebar-section { padding: 12px 12px 4px; }
+  .sidebar-label {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .8px;
+    color: var(--text3); padding: 0 4px 6px;
+  }
+  .project-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 13.5px; color: var(--text2);
+    transition: all .12s;
+  }
+  .project-item:hover { background: var(--surface2); color: var(--text); }
+  .project-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
+  .project-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .project-item .proj-actions {
+    margin-left: auto; display: none; gap: 3px;
+  }
+  .project-item:hover .proj-actions { display: flex; }
+  .proj-act-btn {
+    width: 20px; height: 20px; border: none; background: none;
+    cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    color: var(--text3); font-size: 11px; transition: all .1s;
+  }
+  .proj-act-btn:hover { background: var(--border); color: var(--text); }
+  .add-project-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 10px; border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 13px; color: var(--text3);
+    border: 1.5px dashed var(--border2); margin: 4px 12px 12px;
+    background: none; font-family: inherit; transition: all .15s;
+  }
+  .add-project-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-light); }
+
+  /* ---- CONTENT ---- */
+  #content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* ======= BOARD VIEW ======= */
+  #board-view { flex: 1; overflow: hidden; display: none; flex-direction: column; }
+  #board-view.active { display: flex; }
+
+  #canvas-toolbar {
+    height: 48px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .tool-group { display: flex; align-items: center; gap: 2px; }
+  .tool-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+  .tool-btn {
+    width: 34px; height: 34px;
+    border: 1px solid transparent;
+    background: none; border-radius: var(--radius-sm);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--text2); transition: all .12s; font-size: 15px;
+    position: relative;
+  }
+  .tool-btn:hover { background: var(--surface2); color: var(--text); }
+  .tool-btn.active { background: var(--accent-light); color: var(--accent); border-color: #bfcfff; }
+  .tool-tooltip {
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: var(--text); color: #fff;
+    font-size: 11px; padding: 3px 7px; border-radius: 4px;
+    white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tool-btn:hover .tool-tooltip { opacity: 1; }
+
+  #color-picker-wrap { display: flex; align-items: center; gap: 6px; }
+  .color-swatch {
+    width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all .12s;
+  }
+  .color-swatch.active { border-color: var(--text); transform: scale(1.2); }
+  #stroke-size {
+    width: 70px; accent-color: var(--accent);
+  }
+
+  #canvas-wrap {
+    flex: 1; overflow: hidden; position: relative; cursor: crosshair;
+    background: var(--surface);
+  }
+  #main-canvas { display: block; width: 100%; height: 100%; }
+
+  /* Sticky notes */
+  .sticky {
+    position: absolute;
+    min-width: 160px; min-height: 100px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    font-size: 13px; line-height: 1.5;
+    cursor: grab; user-select: none;
+    display: flex; flex-direction: column;
+    resize: both; overflow: hidden;
+  }
+  .sticky:active { cursor: grabbing; }
+  .sticky-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px; flex-shrink: 0;
+  }
+  .sticky-drag-handle { font-size: 12px; color: rgba(0,0,0,.3); cursor: grab; }
+  .sticky-del {
+    width: 18px; height: 18px; border: none; border-radius: 50%;
+    background: rgba(0,0,0,.12); color: rgba(0,0,0,.5);
+    cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center;
+    transition: all .1s;
+  }
+  .sticky-del:hover { background: rgba(220,38,38,.8); color: #fff; }
+  .sticky textarea {
+    flex: 1; border: none; background: transparent; resize: none;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.5;
+    color: rgba(0,0,0,.75); outline: none; min-height: 60px;
+  }
+
+  /* Image nodes */
+  .img-node {
+    position: absolute;
+    cursor: grab;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: border-color .15s;
+  }
+  .img-node:hover { border-color: var(--accent); }
+  .img-node img { display: block; max-width: 300px; max-height: 300px; pointer-events: none; }
+  .img-del {
+    position: absolute; top: 4px; right: 4px;
+    width: 20px; height: 20px; border: none; border-radius: 50%;
+    background: rgba(220,38,38,.85); color: #fff;
+    cursor: pointer; font-size: 10px;
+    display: none; align-items: center; justify-content: center;
+  }
+  .img-node:hover .img-del { display: flex; }
+
+  /* ======= TASKS VIEW ======= */
+  #tasks-view { flex: 1; overflow: hidden; display: none; flex-direction: column; }
+  #tasks-view.active { display: flex; }
+
+  .tasks-header {
+    padding: 20px 24px 0;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .tasks-header h2 { font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
+  .tasks-body {
+    flex: 1; overflow-y: auto;
+    padding: 16px 24px 24px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  /* Kanban columns */
+  .kanban-wrap {
+    display: flex; gap: 16px; height: 100%;
+    overflow-x: auto; padding-bottom: 8px;
+  }
+  .kanban-col {
+    min-width: 270px; max-width: 270px;
+    background: var(--surface2);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .kanban-col-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600;
+  }
+  .col-count {
+    background: var(--border); color: var(--text2);
+    font-size: 11px; border-radius: 999px; padding: 1px 7px;
+    font-weight: 600;
+  }
+  .kanban-cards {
+    flex: 1; overflow-y: auto;
+    padding: 10px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 60px;
+  }
+  .kanban-cards.drag-over { background: var(--accent-light); border-radius: 8px; }
+
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 12px;
+    cursor: grab;
+    box-shadow: var(--shadow);
+    transition: box-shadow .15s, transform .15s;
+    font-size: 13.5px;
+  }
+  .task-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .task-card.dragging { opacity: .5; transform: rotate(1.5deg); }
+  .task-card-title { font-weight: 500; margin-bottom: 6px; line-height: 1.4; }
+  .task-card-meta {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  }
+  .tag {
+    font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 500;
+  }
+  .tag-blue { background: var(--accent-light); color: var(--accent); }
+  .tag-green { background: var(--accent2-light); color: var(--accent2); }
+  .tag-warn { background: var(--warn-light); color: var(--warn); }
+  .tag-purple { background: var(--purple-light); color: var(--purple); }
+  .tag-danger { background: var(--danger-light); color: var(--danger); }
+  .task-date { font-size: 11px; color: var(--text3); margin-left: auto; font-family: 'DM Mono', monospace; }
+
+  .add-task-btn {
+    margin: 0 10px 10px;
+    padding: 8px; background: none;
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    cursor: pointer; font-family: inherit; font-size: 13px;
+    color: var(--text3); transition: all .15s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .add-task-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* ======= CALENDAR VIEW ======= */
+  #calendar-view { flex: 1; overflow: hidden; display: none; flex-direction: column; }
+  #calendar-view.active { display: flex; }
+
+  .cal-header {
+    padding: 18px 24px 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .cal-header h2 { font-size: 18px; font-weight: 600; letter-spacing: -.3px; flex: 1; }
+  .cal-grid-wrap { flex: 1; overflow-y: auto; padding: 0 24px 24px; }
+  .cal-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 1px; margin-bottom: 4px;
+  }
+  .cal-weekday {
+    text-align: center; font-size: 11.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .6px;
+    color: var(--text3); padding: 4px;
+  }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .cal-day {
+    background: var(--surface);
+    min-height: 90px; padding: 6px;
+    cursor: pointer; transition: background .1s;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .cal-day:hover { background: var(--surface2); }
+  .cal-day.other-month .cal-day-num { color: var(--text3); }
+  .cal-day.today { background: var(--accent-light); }
+  .cal-day.today .cal-day-num { color: var(--accent); font-weight: 700; }
+  .cal-day-num {
+    font-size: 13px; font-weight: 500;
+    font-family: 'DM Mono', monospace;
+  }
+  .cal-event {
+    font-size: 11px; padding: 2px 5px;
+    border-radius: 4px; line-height: 1.3;
+    font-weight: 500; cursor: pointer;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ======= MODAL ======= */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.25); backdrop-filter: blur(2px);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 440px; max-width: 95vw;
+    padding: 24px;
+    transform: translateY(8px); transition: transform .2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12.5px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+  .form-input {
+    width: 100%; height: 36px; padding: 0 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 13.5px; color: var(--text);
+    background: var(--surface); outline: none; transition: border-color .15s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-textarea {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 13.5px; color: var(--text);
+    background: var(--surface); outline: none; resize: vertical;
+    min-height: 80px; transition: border-color .15s;
+  }
+  .form-textarea:focus { border-color: var(--accent); }
+  .form-select {
+    width: 100%; height: 36px; padding: 0 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 13.5px; color: var(--text);
+    background: var(--surface); outline: none; cursor: pointer;
+  }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* Color palette for projects */
+  .color-palette { display: flex; gap: 8px; flex-wrap: wrap; }
+  .palette-swatch {
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all .12s;
+  }
+  .palette-swatch.selected { border-color: var(--text); transform: scale(1.2); }
+
+  /* Language toggle */
+  .lang-toggle {
+    height: 34px; padding: 0 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+    color: var(--text2); transition: all .15s;
+  }
+  .lang-toggle:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(60px);
+    background: var(--text); color: #fff;
+    padding: 10px 18px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 500;
+    z-index: 9999; transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none; white-space: nowrap;
+    box-shadow: var(--shadow-md);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ======= MATH VIEW ======= */
+  #math-view { flex: 1; overflow: hidden; display: none; flex-direction: column; }
+  #math-view.active { display: flex; }
+
+  .math-layout {
+    flex: 1; overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .math-panel {
+    background: var(--surface);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .math-panel-header {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .7px;
+    color: var(--text3);
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+  }
+  .math-panel-header svg { color: var(--accent); }
+  .math-panel-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+
+  /* --- Calculator --- */
+  .calc-display {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    text-align: right;
+  }
+  .calc-expr {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; color: var(--text3);
+    min-height: 18px; word-break: break-all;
+  }
+  .calc-result {
+    font-family: 'DM Mono', monospace;
+    font-size: 24px; font-weight: 600; color: var(--text);
+    word-break: break-all; line-height: 1.2; margin-top: 4px;
+  }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .calc-btn {
+    height: 38px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text);
+    font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .1s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .calc-btn:hover { background: var(--surface2); border-color: var(--border2); }
+  .calc-btn:active { transform: scale(.95); }
+  .calc-btn.op { color: var(--accent); background: var(--accent-light); border-color: #bfcfff; }
+  .calc-btn.op:hover { background: #dbeafe; }
+  .calc-btn.eq { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .calc-btn.eq:hover { background: #1d4ed8; }
+  .calc-btn.fn { color: var(--purple); background: var(--purple-light); border-color: #ddd6fe; font-size: 11.5px; }
+  .calc-btn.fn:hover { background: #ede9fe; }
+  .calc-btn.clear { color: var(--danger); background: var(--danger-light); border-color: #fecaca; }
+  .calc-btn.clear:hover { background: #fee2e2; }
+  .calc-btn.span2 { grid-column: span 2; }
+
+  /* --- Formula --- */
+  .formula-input-wrap {
+    display: flex; gap: 8px; margin-bottom: 12px; align-items: center;
+  }
+  .formula-input {
+    flex: 1; height: 36px; padding: 0 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text);
+    background: var(--surface); outline: none; transition: border-color .15s;
+  }
+  .formula-input:focus { border-color: var(--accent); }
+  .formula-output {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+    min-height: 60px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; overflow-x: auto;
+  }
+  .formula-error { color: var(--danger); font-size: 13px; font-family: 'DM Mono', monospace; }
+  .formula-history { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .formula-hist-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 8px 12px;
+    cursor: pointer; transition: background .1s; overflow-x: auto;
+  }
+  .formula-hist-item:hover { background: var(--accent-light); border-color: #bfcfff; }
+  .formula-hint {
+    font-size: 11.5px; color: var(--text3); margin-top: 8px; line-height: 1.6;
+  }
+  .formula-hint code {
+    background: var(--surface2); border-radius: 3px; padding: 1px 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* --- Grapher --- */
+  .graph-controls {
+    display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .graph-fn-input {
+    flex: 1; min-width: 120px; height: 34px; padding: 0 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text);
+    background: var(--surface); outline: none; transition: border-color .15s;
+  }
+  .graph-fn-input:focus { border-color: var(--accent); }
+  .graph-range-label { font-size: 12px; color: var(--text2); white-space: nowrap; }
+  .graph-range-input {
+    width: 54px; height: 34px; padding: 0 7px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text);
+    background: var(--surface); outline: none; text-align: center;
+  }
+  #graph-canvas-wrap {
+    flex: 1; position: relative; min-height: 0;
+  }
+  #graph-canvas {
+    width: 100%; height: 100%; display: block;
+    border-radius: var(--radius-sm); border: 1px solid var(--border);
+  }
+  .graph-error { color: var(--danger); font-size: 12px; font-family: 'DM Mono', monospace; margin-top: 4px; }
+
+  /* --- Unit Converter --- */
+  .unit-category-tabs {
+    display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px;
+  }
+  .unit-cat-btn {
+    height: 28px; padding: 0 10px;
+    border: 1px solid var(--border); border-radius: 999px;
+    background: none; font-family: inherit; font-size: 12px; font-weight: 500;
+    color: var(--text2); cursor: pointer; transition: all .12s;
+  }
+  .unit-cat-btn:hover { background: var(--surface2); color: var(--text); }
+  .unit-cat-btn.active { background: var(--accent-light); color: var(--accent); border-color: #bfcfff; }
+  .unit-row {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 10px;
+  }
+  .unit-value-input {
+    flex: 1; height: 40px; padding: 0 12px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500;
+    color: var(--text); background: var(--surface); outline: none;
+    transition: border-color .15s;
+  }
+  .unit-value-input:focus { border-color: var(--accent); }
+  .unit-select {
+    height: 40px; padding: 0 8px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 13px; color: var(--text);
+    background: var(--surface); outline: none; cursor: pointer; min-width: 110px;
+  }
+  .unit-swap-btn {
+    width: 32px; height: 32px; border: 1px solid var(--border);
+    background: var(--surface2); border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--text2); flex-shrink: 0; transition: all .15s;
+  }
+  .unit-swap-btn:hover { background: var(--accent-light); color: var(--accent); border-color: #bfcfff; }
+  .unit-result-box {
+    background: var(--accent-light); border: 1px solid #bfcfff;
+    border-radius: var(--radius); padding: 14px 16px;
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .unit-result-value {
+    font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 700;
+    color: var(--accent); flex: 1; word-break: break-all;
+  }
+  .unit-result-label { font-size: 14px; color: var(--text2); }
+  .unit-formula-hint { font-size: 11.5px; color: var(--text3); margin-top: 8px; }
+
+  /* KaTeX override */
+  .katex { font-size: 1.2em !important; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <rect x="1" y="1" width="7" height="7" rx="2" fill="currentColor" opacity=".8"/>
+      <rect x="10" y="1" width="7" height="7" rx="2" fill="currentColor" opacity=".5"/>
+      <rect x="1" y="10" width="7" height="7" rx="2" fill="currentColor" opacity=".5"/>
+      <rect x="10" y="10" width="7" height="7" rx="2" fill="currentColor"/>
+    </svg>
+    MiniPlansa
+  </div>
+  <button class="tab-btn active" onclick="switchView('board')" id="tab-board">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+    Board
+  </button>
+  <button class="tab-btn" onclick="switchView('tasks')" id="tab-tasks">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Tasks
+  </button>
+  <button class="tab-btn" onclick="switchView('calendar')" id="tab-calendar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Calendar
+  </button>
+  <button class="tab-btn" onclick="switchView('math')" id="tab-math">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+    Math
+  </button>
+  <div class="spacer"></div>
+  <button class="lang-toggle" id="lang-toggle-btn" onclick="toggleLang()" title="Switch language">
+    <span id="lang-flag">🇬🇧</span><span id="lang-code">EN</span>
+  </button>
+  <button class="icon-btn" onclick="saveData()" title="Save">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+  </button>
+  <button class="icon-btn" onclick="loadData()" title="Load">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  </button>
+  <input type="file" id="file-input" accept=".miniplansa" style="display:none" onchange="handleFileLoad(event)">
+  <button class="btn btn-primary" id="btn-new-project" onclick="openNewProjectModal()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Project
+  </button>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Projects</div>
+      <div id="project-list"></div>
+    </div>
+    <button class="add-project-btn" id="btn-add-project" onclick="openNewProjectModal()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add project
+    </button>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- BOARD VIEW -->
+    <div id="board-view" class="active">
+      <div id="canvas-toolbar">
+        <div class="tool-group">
+          <button class="tool-btn active" id="tool-pen" onclick="setTool('pen')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span class="tool-tooltip">Pen</span>
+          </button>
+          <button class="tool-btn" id="tool-eraser" onclick="setTool('eraser')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16l13-13 7 7-3 10z"/><path d="M6.0001 11L13 18"/></svg>
+            <span class="tool-tooltip">Eraser</span>
+          </button>
+          <button class="tool-btn" id="tool-line" onclick="setTool('line')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+            <span class="tool-tooltip">Line</span>
+          </button>
+          <button class="tool-btn" id="tool-rect" onclick="setTool('rect')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+            <span class="tool-tooltip">Rectangle</span>
+          </button>
+          <button class="tool-btn" id="tool-circle" onclick="setTool('circle')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+            <span class="tool-tooltip">Circle</span>
+          </button>
+          <button class="tool-btn" id="tool-arrow" onclick="setTool('arrow')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="19 13 19 5 11 5"/></svg>
+            <span class="tool-tooltip">Arrow</span>
+          </button>
+          <button class="tool-btn" id="tool-text" onclick="setTool('text')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            <span class="tool-tooltip">Text</span>
+          </button>
+        </div>
+        <div class="tool-sep"></div>
+        <div class="tool-group">
+          <button class="tool-btn" id="tool-note" onclick="addSticky()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="tool-tooltip">Add Note</span>
+          </button>
+          <button class="tool-btn" id="tool-img" onclick="triggerImgUpload()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span class="tool-tooltip">Add Image</span>
+          </button>
+          <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="handleImgUpload(event)">
+        </div>
+        <div class="tool-sep"></div>
+        <div id="color-picker-wrap">
+          <div class="color-swatch active" style="background:#1a1917" data-color="#1a1917" onclick="setColor(this)"></div>
+          <div class="color-swatch" style="background:#2563eb" data-color="#2563eb" onclick="setColor(this)"></div>
+          <div class="color-swatch" style="background:#16a34a" data-color="#16a34a" onclick="setColor(this)"></div>
+          <div class="color-swatch" style="background:#dc2626" data-color="#dc2626" onclick="setColor(this)"></div>
+          <div class="color-swatch" style="background:#d97706" data-color="#d97706" onclick="setColor(this)"></div>
+          <div class="color-swatch" style="background:#7c3aed" data-color="#7c3aed" onclick="setColor(this)"></div>
+          <input type="color" id="custom-color" value="#1a1917" style="width:22px;height:22px;border:none;padding:0;border-radius:50%;cursor:pointer;overflow:hidden;background:none" title="Custom color" oninput="setCustomColor(this.value)">
+        </div>
+        <div class="tool-sep"></div>
+        <input type="range" id="stroke-size" min="1" max="20" value="2" style="width:70px">
+        <span id="stroke-label" style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;min-width:18px">2</span>
+        <div class="spacer"></div>
+        <button class="btn btn-secondary" id="btn-clear-board" style="height:30px;font-size:12.5px" onclick="clearCanvas()">Clear board</button>
+        <button class="btn btn-secondary" id="btn-undo" style="height:30px;font-size:12.5px" onclick="undoCanvas()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+          Undo
+        </button>
+      </div>
+      <div id="canvas-wrap">
+        <canvas id="main-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- TASKS VIEW -->
+    <div id="tasks-view">
+      <div class="tasks-header">
+        <h2 id="tasks-title">Tasks</h2>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" id="btn-add-task-header" onclick="openAddTaskModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Task
+        </button>
+      </div>
+      <div class="tasks-body">
+        <div class="kanban-wrap" id="kanban-wrap"></div>
+      </div>
+    </div>
+
+    <!-- CALENDAR VIEW -->
+    <div id="calendar-view">
+      <div class="cal-header">
+        <button class="icon-btn" onclick="calPrev()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h2 id="cal-title">Month Year</h2>
+        <button class="icon-btn" onclick="calNext()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" id="btn-add-event-header" onclick="openAddEventModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Event
+        </button>
+      </div>
+      <div class="cal-grid-wrap">
+        <div class="cal-weekdays">
+          <div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div>
+          <div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div>
+          <div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div>
+          <div class="cal-weekday">Sat</div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+    </div>
+
+    <!-- MATH VIEW -->
+    <div id="math-view">
+      <div class="math-layout">
+
+        <!-- CALCULATOR -->
+        <div class="math-panel">
+          <div class="math-panel-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="16" y2="18"/></svg>
+            <span id="math-lbl-calc">Calculator</span>
+          </div>
+          <div class="math-panel-body">
+            <div class="calc-display">
+              <div class="calc-expr" id="calc-expr"></div>
+              <div class="calc-result" id="calc-result">0</div>
+            </div>
+            <div class="calc-grid" id="calc-grid"></div>
+          </div>
+        </div>
+
+        <!-- FORMULA RENDERER -->
+        <div class="math-panel">
+          <div class="math-panel-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+            <span id="math-lbl-formula">Formula Renderer</span>
+          </div>
+          <div class="math-panel-body" style="display:flex;flex-direction:column;gap:0">
+            <div class="formula-input-wrap">
+              <input class="formula-input" id="formula-input" placeholder="\frac{a}{b} + \sqrt{x^2+y^2}" oninput="renderFormula()" onkeydown="if(event.key==='Enter')addFormulaToHistory()">
+              <button class="btn btn-primary" style="height:36px;font-size:13px" onclick="addFormulaToHistory()" id="math-btn-render">Render</button>
+            </div>
+            <div class="formula-output" id="formula-output"></div>
+            <div class="formula-hint" id="formula-hint-text">
+              Type LaTeX: <code>\frac{1}{2}</code> <code>\sqrt{x}</code> <code>\sum_{i=0}^n</code> <code>\int_a^b</code> <code>\alpha \beta \pi</code>
+            </div>
+            <div class="formula-history" id="formula-history"></div>
+          </div>
+        </div>
+
+        <!-- GRAPHER -->
+        <div class="math-panel" style="grid-row: span 1">
+          <div class="math-panel-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span id="math-lbl-graph">Function Grapher</span>
+          </div>
+          <div class="math-panel-body" style="display:flex;flex-direction:column;gap:0;overflow:hidden">
+            <div class="graph-controls">
+              <span class="graph-range-label" id="graph-lbl-f">f(x) =</span>
+              <input class="graph-fn-input" id="graph-fn" value="Math.sin(x)" placeholder="Math.sin(x)">
+              <span class="graph-range-label" id="graph-lbl-from">x:</span>
+              <input class="graph-range-input" id="graph-xmin" value="-10">
+              <span class="graph-range-label">→</span>
+              <input class="graph-range-input" id="graph-xmax" value="10">
+              <button class="btn btn-primary" style="height:34px;font-size:13px" onclick="drawGraph()" id="math-btn-plot">Plot</button>
+            </div>
+            <div class="graph-error" id="graph-error"></div>
+            <div id="graph-canvas-wrap" style="flex:1;min-height:0">
+              <canvas id="graph-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- UNIT CONVERTER -->
+        <div class="math-panel">
+          <div class="math-panel-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3m8 0h3a2 2 0 002-2v-3"/></svg>
+            <span id="math-lbl-unit">Unit Converter</span>
+          </div>
+          <div class="math-panel-body">
+            <div class="unit-category-tabs" id="unit-cat-tabs"></div>
+            <div class="unit-row">
+              <input class="unit-value-input" id="unit-from-val" type="number" value="1" oninput="convertUnit()">
+              <select class="unit-select" id="unit-from-sel" onchange="convertUnit()"></select>
+            </div>
+            <div style="display:flex;justify-content:center;margin:2px 0">
+              <button class="unit-swap-btn" onclick="swapUnits()" title="Swap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+              </button>
+            </div>
+            <div class="unit-row">
+              <div style="flex:1"></div>
+              <select class="unit-select" id="unit-to-sel" onchange="convertUnit()"></select>
+            </div>
+            <div class="unit-result-box" style="margin-top:10px">
+              <div class="unit-result-value" id="unit-result">—</div>
+              <div class="unit-result-label" id="unit-result-label"></div>
+            </div>
+            <div class="unit-formula-hint" id="unit-formula-hint"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- New Project Modal -->
+<div class="modal-overlay" id="project-modal">
+  <div class="modal">
+    <div class="modal-title" id="project-modal-title">New Project</div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-proj-name">Project Name</label>
+      <input class="form-input" id="project-name-input" placeholder="e.g. Website Redesign" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-proj-color">Color</label>
+      <div class="color-palette" id="proj-color-palette"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btn-proj-cancel" onclick="closeModal('project-modal')">Cancel</button>
+      <button class="btn btn-primary" id="btn-proj-save" onclick="saveProject()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Task Modal -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <div class="modal-title">Add Task</div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-task-title">Title</label>
+      <input class="form-input" id="task-title-input" placeholder="Task title" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-task-desc">Description</label>
+      <textarea class="form-textarea" id="task-desc-input" placeholder="Optional description..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-task-col">Column</label>
+      <select class="form-select" id="task-col-input">
+        <option value="todo">To Do</option>
+        <option value="inprogress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-task-label">Label</label>
+      <select class="form-select" id="task-label-input">
+        <option value="none">None</option>
+        <option value="blue">Feature</option>
+        <option value="green">Improvement</option>
+        <option value="warn">Design</option>
+        <option value="purple">Research</option>
+        <option value="danger">Bug</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-task-date">Due Date</label>
+      <input class="form-input" id="task-date-input" type="date" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btn-task-cancel" onclick="closeModal('task-modal')">Cancel</button>
+      <button class="btn btn-primary" id="btn-task-save" onclick="saveTask()">Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Event Modal -->
+<div class="modal-overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-title">Add Event</div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-event-name">Event Name</label>
+      <input class="form-input" id="event-name-input" placeholder="Event name" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-event-date">Date</label>
+      <input class="form-input" id="event-date-input" type="date" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-event-color">Color</label>
+      <select class="form-select" id="event-color-input">
+        <option value="tag-blue">Blue</option>
+        <option value="tag-green">Green</option>
+        <option value="tag-warn">Orange</option>
+        <option value="tag-purple">Purple</option>
+        <option value="tag-danger">Red</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btn-event-cancel" onclick="closeModal('event-modal')">Cancel</button>
+      <button class="btn btn-primary" id="btn-event-save" onclick="saveEvent()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Event detail modal -->
+<div class="modal-overlay" id="event-detail-modal">
+  <div class="modal">
+    <div class="modal-title" id="event-detail-name"></div>
+    <p style="font-size:13.5px;color:var(--text2)" id="event-detail-date"></p>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="btn-event-del" onclick="deleteCurrentEvent()">Delete</button>
+      <button class="btn btn-secondary" id="btn-event-close" onclick="closeModal('event-detail-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script>
+// ===== STATE =====
+let state = {
+  projects: [],
+  activeProject: null,
+  boards: {}, // projectId -> { strokes, stickies, images }
+  tasks: {}, // projectId -> [task]
+  events: []  // [{id,name,date,color}]
+};
+
+let currentView = 'board';
+let editingProjectId = null;
+let currentEventId = null;
+
+// ===== I18N =====
+let lang = 'en';
+
+const LANGS = {
+  en: {
+    // Topbar
+    tabBoard: 'Board', tabTasks: 'Tasks', tabCalendar: 'Calendar',
+    newProject: 'New Project',
+    // Sidebar
+    sidebarProjects: 'Projects', addProject: 'Add project',
+    // Board toolbar
+    toolPen: 'Pen', toolEraser: 'Eraser', toolLine: 'Line',
+    toolRect: 'Rectangle', toolCircle: 'Circle', toolArrow: 'Arrow',
+    toolText: 'Text', toolNote: 'Add Note', toolImage: 'Add Image',
+    clearBoard: 'Clear board', undo: 'Undo',
+    // Tasks
+    addTask: 'Add Task',
+    colTodo: 'To Do', colInProgress: 'In Progress', colDone: 'Done',
+    addTaskInCol: 'Add task',
+    taskModalTitle: 'Add Task',
+    labelTitle: 'Title', labelDesc: 'Description', labelColumn: 'Column',
+    labelLabel: 'Label', labelDueDate: 'Due Date',
+    placeholderTitle: 'Task title', placeholderDesc: 'Optional description...',
+    labelNone: 'None', labelFeature: 'Feature', labelImprovement: 'Improvement',
+    labelDesign: 'Design', labelResearch: 'Research', labelBug: 'Bug',
+    // Calendar
+    addEvent: 'Add Event',
+    weekdays: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    eventModalTitle: 'Add Event', labelEventName: 'Event Name',
+    labelDate: 'Date', labelColor: 'Color',
+    placeholderEvent: 'Event name',
+    colorBlue: 'Blue', colorGreen: 'Green', colorOrange: 'Orange',
+    colorPurple: 'Purple', colorRed: 'Red',
+    // Project modal
+    newProjectTitle: 'New Project', editProjectTitle: 'Edit Project',
+    labelProjectName: 'Project Name', placeholderProjectName: 'e.g. Website Redesign',
+    labelProjectColor: 'Color',
+    // Event detail
+    btnDelete: 'Delete', btnClose: 'Close', btnCancel: 'Cancel', btnSave: 'Save',
+    btnAddTask: 'Add Task',
+    // Math tab
+    tabMath: 'Math',
+    mathCalc: 'Calculator', mathFormula: 'Formula Renderer',
+    mathGraph: 'Function Grapher', mathUnit: 'Unit Converter',
+    mathBtnRender: 'Render', mathBtnPlot: 'Plot',
+    mathFormulaHint: 'Type LaTeX:',
+    mathGraphF: 'f(x) =', mathGraphFrom: 'x:',
+    // Toasts
+    toastSaved: 'Project saved!', toastLoaded: 'Project loaded!',
+    toastLoadFail: 'Failed to load file',
+    toastTaskAdded: 'Task added', toastEventAdded: 'Event added',
+    toastEventDeleted: 'Event deleted', toastProjectCreated: 'Project created',
+    toastProjectUpdated: 'Project updated', toastProjectDeleted: 'Project deleted',
+    toastCantDelete: 'Cannot delete the only project',
+    toastNothingUndo: 'Nothing to undo', toastBoardCleared: 'Board cleared',
+    toastFillEventFields: 'Please fill in name and date',
+    confirmDeleteProject: 'Delete this project?',
+    confirmClearBoard: 'Clear the board drawing? (Notes and images are kept)',
+    // Tasks title suffix
+    tasksTitleSuffix: '— Tasks',
+    // Default project name
+    defaultProjectName: 'My Project',
+  },
+  ro: {
+    tabBoard: 'Tablă', tabTasks: 'Sarcini', tabCalendar: 'Calendar',
+    newProject: 'Proiect nou',
+    sidebarProjects: 'Proiecte', addProject: 'Adaugă proiect',
+    toolPen: 'Creion', toolEraser: 'Radieră', toolLine: 'Linie',
+    toolRect: 'Dreptunghi', toolCircle: 'Cerc', toolArrow: 'Săgeată',
+    toolText: 'Text', toolNote: 'Adaugă notă', toolImage: 'Adaugă imagine',
+    clearBoard: 'Șterge tabla', undo: 'Anulează',
+    addTask: 'Adaugă sarcină',
+    colTodo: 'De făcut', colInProgress: 'În progres', colDone: 'Finalizat',
+    addTaskInCol: 'Adaugă sarcină',
+    taskModalTitle: 'Adaugă sarcină',
+    labelTitle: 'Titlu', labelDesc: 'Descriere', labelColumn: 'Coloană',
+    labelLabel: 'Etichetă', labelDueDate: 'Termen limită',
+    placeholderTitle: 'Titlul sarcinii', placeholderDesc: 'Descriere opțională...',
+    labelNone: 'Niciuna', labelFeature: 'Funcționalitate', labelImprovement: 'Îmbunătățire',
+    labelDesign: 'Design', labelResearch: 'Cercetare', labelBug: 'Eroare',
+    addEvent: 'Adaugă eveniment',
+    weekdays: ['Dum','Lun','Mar','Mie','Joi','Vin','Sâm'],
+    eventModalTitle: 'Adaugă eveniment', labelEventName: 'Nume eveniment',
+    labelDate: 'Dată', labelColor: 'Culoare',
+    placeholderEvent: 'Nume eveniment',
+    colorBlue: 'Albastru', colorGreen: 'Verde', colorOrange: 'Portocaliu',
+    colorPurple: 'Mov', colorRed: 'Roșu',
+    newProjectTitle: 'Proiect nou', editProjectTitle: 'Editează proiect',
+    labelProjectName: 'Nume proiect', placeholderProjectName: 'ex. Redesign site',
+    labelProjectColor: 'Culoare',
+    btnDelete: 'Șterge', btnClose: 'Închide', btnCancel: 'Anulează', btnSave: 'Salvează',
+    btnAddTask: 'Adaugă sarcină',
+    tabMath: 'Matematică',
+    mathCalc: 'Calculator', mathFormula: 'Renderer Formule',
+    mathGraph: 'Grafic Funcții', mathUnit: 'Convertor Unități',
+    mathBtnRender: 'Randează', mathBtnPlot: 'Desenează',
+    mathFormulaHint: 'Scrie LaTeX:',
+    mathGraphF: 'f(x) =', mathGraphFrom: 'x:',
+    toastSaved: 'Proiect salvat!', toastLoaded: 'Proiect încărcat!',
+    toastLoadFail: 'Eroare la încărcare',
+    toastTaskAdded: 'Sarcină adăugată', toastEventAdded: 'Eveniment adăugat',
+    toastEventDeleted: 'Eveniment șters', toastProjectCreated: 'Proiect creat',
+    toastProjectUpdated: 'Proiect actualizat', toastProjectDeleted: 'Proiect șters',
+    toastCantDelete: 'Nu poți șterge singurul proiect',
+    toastNothingUndo: 'Nimic de anulat', toastBoardCleared: 'Tablă ștearsă',
+    toastFillEventFields: 'Completează numele și data',
+    confirmDeleteProject: 'Ștergi acest proiect?',
+    confirmClearBoard: 'Ștergi desenul? (Notițele și imaginile rămân)',
+    tasksTitleSuffix: '— Sarcini',
+    defaultProjectName: 'Proiectul meu',
+  }
+};
+
+function t(key) { return LANGS[lang][key] || LANGS.en[key] || key; }
+
+function toggleLang() {
+  lang = lang === 'en' ? 'ro' : 'en';
+  localStorage.setItem('miniplansa_lang', lang);
+  applyLang();
+}
+
+function applyLang() {
+  const isRo = lang === 'ro';
+  document.getElementById('lang-flag').textContent = isRo ? '🇷🇴' : '🇬🇧';
+  document.getElementById('lang-code').textContent = isRo ? 'RO' : 'EN';
+  document.documentElement.lang = lang;
+
+  // Topbar tabs
+  setInner('tab-board', svgOf('tab-board') + t('tabBoard'));
+  setInner('tab-tasks', svgOf('tab-tasks') + t('tabTasks'));
+  setInner('tab-calendar', svgOf('tab-calendar') + t('tabCalendar'));
+  setInner('btn-new-project', `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>${t('newProject')}`);
+
+  // Sidebar
+  document.querySelector('.sidebar-label').textContent = t('sidebarProjects');
+  setInner('btn-add-project', `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>${t('addProject')}`);
+
+  // Board toolbar tooltips
+  setTooltip('tool-pen', t('toolPen'));
+  setTooltip('tool-eraser', t('toolEraser'));
+  setTooltip('tool-line', t('toolLine'));
+  setTooltip('tool-rect', t('toolRect'));
+  setTooltip('tool-circle', t('toolCircle'));
+  setTooltip('tool-arrow', t('toolArrow'));
+  setTooltip('tool-text', t('toolText'));
+  setTooltip('tool-note', t('toolNote'));
+  setTooltip('tool-img', t('toolImage'));
+  setInner('btn-clear-board', t('clearBoard'));
+  setInner('btn-undo', `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>${t('undo')}`);
+
+  // Tasks header
+  setInner('btn-add-task-header', `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>${t('addTask')}`);
+
+  // Calendar header
+  setInner('btn-add-event-header', `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>${t('addEvent')}`);
+
+  // Calendar weekdays
+  const wds = document.querySelectorAll('.cal-weekday');
+  wds.forEach((el, i) => { el.textContent = t('weekdays')[i]; });
+
+  // Task modal
+  document.querySelector('#task-modal .modal-title').textContent = t('taskModalTitle');
+  setLabel('lbl-task-title', t('labelTitle'));
+  setLabel('lbl-task-desc', t('labelDesc'));
+  setLabel('lbl-task-col', t('labelColumn'));
+  setLabel('lbl-task-label', t('labelLabel'));
+  setLabel('lbl-task-date', t('labelDueDate'));
+  document.getElementById('task-title-input').placeholder = t('placeholderTitle');
+  document.getElementById('task-desc-input').placeholder = t('placeholderDesc');
+  setOptions('task-col-input', [
+    ['todo', t('colTodo')], ['inprogress', t('colInProgress')], ['done', t('colDone')]
+  ]);
+  setOptions('task-label-input', [
+    ['none', t('labelNone')], ['blue', t('labelFeature')], ['green', t('labelImprovement')],
+    ['warn', t('labelDesign')], ['purple', t('labelResearch')], ['danger', t('labelBug')]
+  ]);
+  setInner('btn-task-cancel', t('btnCancel'));
+  setInner('btn-task-save', t('btnAddTask'));
+
+  // Project modal
+  setLabel('lbl-proj-name', t('labelProjectName'));
+  setLabel('lbl-proj-color', t('labelProjectColor'));
+  document.getElementById('project-name-input').placeholder = t('placeholderProjectName');
+  setInner('btn-proj-cancel', t('btnCancel'));
+  setInner('btn-proj-save', t('btnSave'));
+
+  // Event modal
+  document.querySelector('#event-modal .modal-title').textContent = t('eventModalTitle');
+  setLabel('lbl-event-name', t('labelEventName'));
+  setLabel('lbl-event-date', t('labelDate'));
+  setLabel('lbl-event-color', t('labelColor'));
+  document.getElementById('event-name-input').placeholder = t('placeholderEvent');
+  setOptions('event-color-input', [
+    ['tag-blue', t('colorBlue')], ['tag-green', t('colorGreen')], ['tag-warn', t('colorOrange')],
+    ['tag-purple', t('colorPurple')], ['tag-danger', t('colorRed')]
+  ]);
+  setInner('btn-event-cancel', t('btnCancel'));
+  setInner('btn-event-save', t('btnSave'));
+
+  // Event detail modal
+  setInner('btn-event-del', t('btnDelete'));
+  setInner('btn-event-close', t('btnClose'));
+
+  // Math tab
+  const tabMathEl = document.getElementById('tab-math');
+  if (tabMathEl) tabMathEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>${t('tabMath')}`;
+  setTxt('math-lbl-calc', t('mathCalc'));
+  setTxt('math-lbl-formula', t('mathFormula'));
+  setTxt('math-lbl-graph', t('mathGraph'));
+  setTxt('math-lbl-unit', t('mathUnit'));
+  setInner('math-btn-render', t('mathBtnRender'));
+  setInner('math-btn-plot', t('mathBtnPlot'));
+  setTxt('graph-lbl-f', t('mathGraphF'));
+  setTxt('graph-lbl-from', t('mathGraphFrom'));
+
+  // Re-render dynamic content
+  renderProjects();
+  renderKanban();
+  renderCalendar();
+
+  // Update tasks title
+  const p = state.projects.find(x => x.id === state.activeProject);
+  if (p) document.getElementById('tasks-title').textContent = p.name + ' ' + t('tasksTitleSuffix');
+}
+
+function setTxt(id, html) { const el = document.getElementById(id); if (el) el.textContent = html; }
+function setInner(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
+function setLabel(id, txt) { const el = document.getElementById(id); if (el) el.textContent = txt; }
+function setTooltip(btnId, txt) {
+  const el = document.querySelector(`#${btnId} .tool-tooltip`);
+  if (el) el.textContent = txt;
+}
+function setOptions(selectId, pairs) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const cur = sel.value;
+  pairs.forEach(([val, lbl], i) => { if (sel.options[i]) sel.options[i].text = lbl; });
+  sel.value = cur;
+}
+function svgOf(tabId) {
+  const svgs = {
+    'tab-board': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>',
+    'tab-tasks': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',
+    'tab-calendar': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  };
+  return svgs[tabId] || '';
+}
+
+// ===== PROJECT COLORS =====
+const PROJ_COLORS = ['#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#db2777','#65a30d','#ea580c','#0d9488'];
+
+// ===== INIT =====
+function init() {
+  // Language
+  lang = localStorage.getItem('miniplansa_lang') || 'en';
+
+  // Try localStorage
+  const saved = localStorage.getItem('miniplansa_data');
+  if (saved) { try { state = JSON.parse(saved); } catch(e){} }
+
+  // Defaults
+  if (!state.projects) state.projects = [];
+  if (!state.boards) state.boards = {};
+  if (!state.tasks) state.tasks = {};
+  if (!state.events) state.events = [];
+
+  if (state.projects.length === 0) {
+    addDefaultProject();
+  }
+
+  renderProjects();
+  if (!state.activeProject && state.projects.length > 0) {
+    setActiveProject(state.projects[0].id);
+  } else if (state.activeProject) {
+    setActiveProject(state.activeProject);
+  }
+
+  initCanvas();
+  renderKanban();
+  renderCalendar();
+  buildProjColorPalette();
+  applyLang();
+}
+
+function addDefaultProject() {
+  const p = { id: uid(), name: LANGS[lang]?.defaultProjectName || 'My Project', color: '#2563eb' };
+  state.projects.push(p);
+}
+
+// ===== PROJECT UI =====
+function renderProjects() {
+  const list = document.getElementById('project-list');
+  list.innerHTML = '';
+  state.projects.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'project-item' + (p.id === state.activeProject ? ' active' : '');
+    el.innerHTML = `
+      <div class="project-dot" style="background:${p.color}"></div>
+      <span>${esc(p.name)}</span>
+      <div class="proj-actions">
+        <button class="proj-act-btn" onclick="editProject('${p.id}',event)" title="Edit">✏️</button>
+        <button class="proj-act-btn" onclick="deleteProject('${p.id}',event)" title="Delete">🗑</button>
+      </div>
+    `;
+    el.addEventListener('click', () => setActiveProject(p.id));
+    list.appendChild(el);
+  });
+}
+
+function setActiveProject(id) {
+  state.activeProject = id;
+  renderProjects();
+  const p = state.projects.find(x => x.id === id);
+  if (p) {
+    document.getElementById('tasks-title').textContent = p.name + ' ' + t('tasksTitleSuffix');
+  }
+  loadBoardForProject(id);
+  renderKanban();
+  autosave();
+}
+
+function openNewProjectModal() {
+  editingProjectId = null;
+  document.getElementById('project-modal-title').textContent = t('newProjectTitle');
+  document.getElementById('project-name-input').value = '';
+  buildProjColorPalette('#2563eb');
+  openModal('project-modal');
+  setTimeout(() => document.getElementById('project-name-input').focus(), 100);
+}
+
+function editProject(id, e) {
+  e.stopPropagation();
+  const p = state.projects.find(x => x.id === id);
+  if (!p) return;
+  editingProjectId = id;
+  document.getElementById('project-modal-title').textContent = t('editProjectTitle');
+  document.getElementById('project-name-input').value = p.name;
+  buildProjColorPalette(p.color);
+  openModal('project-modal');
+}
+
+function deleteProject(id, e) {
+  e.stopPropagation();
+  if (state.projects.length <= 1) { toast(t('toastCantDelete')); return; }
+  if (!confirm(t('confirmDeleteProject'))) return;
+  state.projects = state.projects.filter(p => p.id !== id);
+  delete state.boards[id];
+  delete state.tasks[id];
+  if (state.activeProject === id) {
+    setActiveProject(state.projects[0].id);
+  }
+  renderProjects();
+  autosave();
+  toast(t('toastProjectDeleted'));
+}
+
+function saveProject() {
+  const name = document.getElementById('project-name-input').value.trim();
+  if (!name) { document.getElementById('project-name-input').focus(); return; }
+  const color = document.querySelector('.palette-swatch.selected')?.dataset.color || '#2563eb';
+
+  if (editingProjectId) {
+    const p = state.projects.find(x => x.id === editingProjectId);
+    if (p) { p.name = name; p.color = color; }
+  } else {
+    const p = { id: uid(), name, color };
+    state.projects.push(p);
+    setActiveProject(p.id);
+  }
+  closeModal('project-modal');
+  renderProjects();
+  autosave();
+  toast(editingProjectId ? t('toastProjectUpdated') : t('toastProjectCreated'));
+}
+
+function buildProjColorPalette(selected) {
+  const wrap = document.getElementById('proj-color-palette');
+  wrap.innerHTML = '';
+  PROJ_COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'palette-swatch' + (c === (selected || '#2563eb') ? ' selected' : '');
+    s.style.background = c;
+    s.dataset.color = c;
+    s.onclick = () => {
+      wrap.querySelectorAll('.palette-swatch').forEach(x => x.classList.remove('selected'));
+      s.classList.add('selected');
+    };
+    wrap.appendChild(s);
+  });
+}
+
+// ===== CANVAS =====
+let canvas, ctx;
+let drawing = false;
+let tool = 'pen';
+let strokeColor = '#1a1917';
+let strokeWidth = 2;
+let startX = 0, startY = 0;
+let snapshot = null;
+let undoStack = [];
+let MAX_UNDO = 20;
+
+function initCanvas() {
+  canvas = document.getElementById('main-canvas');
+  ctx = canvas.getContext('2d');
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  canvas.addEventListener('mousedown', onMouseDown);
+  canvas.addEventListener('mousemove', onMouseMove);
+  canvas.addEventListener('mouseup', onMouseUp);
+  canvas.addEventListener('mouseleave', onMouseUp);
+
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; onMouseDown(touchToMouse(t, canvas)); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); const t = e.touches[0]; onMouseMove(touchToMouse(t, canvas)); }, { passive: false });
+  canvas.addEventListener('touchend', e => { onMouseUp(); }, { passive: false });
+
+  document.getElementById('stroke-size').addEventListener('input', function() {
+    strokeWidth = +this.value;
+    document.getElementById('stroke-label').textContent = this.value;
+  });
+}
+
+function touchToMouse(t, el) {
+  const r = el.getBoundingClientRect();
+  return { offsetX: t.clientX - r.left, offsetY: t.clientY - r.top };
+}
+
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  const data = ctx ? canvas.toDataURL() : null;
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  if (data) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0);
+    img.src = data;
+  }
+}
+
+function loadBoardForProject(id) {
+  if (!canvas) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Remove stickies and images from DOM
+  document.querySelectorAll('.sticky, .img-node').forEach(e => e.remove());
+  undoStack = [];
+
+  const board = state.boards[id];
+  if (!board) return;
+
+  if (board.dataURL) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0);
+    img.src = board.dataURL;
+  }
+  if (board.stickies) board.stickies.forEach(s => createStickyEl(s));
+  if (board.images) board.images.forEach(img => createImgNodeEl(img));
+}
+
+function saveBoardState() {
+  if (!state.activeProject || !canvas) return;
+  if (!state.boards[state.activeProject]) state.boards[state.activeProject] = {};
+  const b = state.boards[state.activeProject];
+  b.dataURL = canvas.toDataURL();
+  // Stickies
+  b.stickies = [];
+  document.querySelectorAll('.sticky').forEach(el => {
+    b.stickies.push({
+      id: el.dataset.id,
+      x: parseInt(el.style.left),
+      y: parseInt(el.style.top),
+      w: el.style.width,
+      h: el.style.height,
+      color: el.style.background,
+      text: el.querySelector('textarea').value
+    });
+  });
+  // Images
+  b.images = [];
+  document.querySelectorAll('.img-node').forEach(el => {
+    b.images.push({
+      id: el.dataset.id,
+      x: parseInt(el.style.left),
+      y: parseInt(el.style.top),
+      src: el.querySelector('img').src
+    });
+  });
+}
+
+function pushUndo() {
+  if (undoStack.length >= MAX_UNDO) undoStack.shift();
+  undoStack.push(canvas.toDataURL());
+}
+
+function undoCanvas() {
+  if (!undoStack.length) { toast(t('toastNothingUndo')); return; }
+  const prev = undoStack.pop();
+  const img = new Image();
+  img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
+  img.src = prev;
+}
+
+function clearCanvas() {
+  if (!confirm(t('confirmClearBoard'))) return;
+  pushUndo();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  toast(t('toastBoardCleared'));
+}
+
+function setTool(t) {
+  // Commit any open text editor before switching tools
+  const existing = document.getElementById('text-editor-overlay');
+  if (existing) commitTextEditor(existing);
+  tool = t;
+  document.querySelectorAll('.tool-btn[id^="tool-"]').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tool-' + t);
+  if (btn) btn.classList.add('active');
+  // Update canvas cursor
+  const wrap = document.getElementById('canvas-wrap');
+  if (t === 'text') wrap.style.cursor = 'text';
+  else if (t === 'eraser') wrap.style.cursor = 'cell';
+  else wrap.style.cursor = 'crosshair';
+}
+
+function setColor(el) {
+  strokeColor = el.dataset.color;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('custom-color').value = strokeColor;
+}
+
+function setCustomColor(val) {
+  strokeColor = val;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+}
+
+function onMouseDown(e) {
+  if (tool === 'text') {
+    addTextNode(e.offsetX, e.offsetY);
+    return;
+  }
+  drawing = true;
+  startX = e.offsetX;
+  startY = e.offsetY;
+  pushUndo();
+  if (tool === 'pen' || tool === 'eraser') {
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+  } else {
+    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  }
+}
+
+function onMouseMove(e) {
+  if (!drawing) return;
+  const x = e.offsetX, y = e.offsetY;
+  if (tool === 'pen') {
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = strokeWidth;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  } else if (tool === 'eraser') {
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = strokeWidth * 4;
+    ctx.lineCap = 'round';
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  } else {
+    ctx.putImageData(snapshot, 0, 0);
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = strokeWidth;
+    ctx.lineCap = 'round';
+    if (tool === 'line') drawLine(startX, startY, x, y);
+    else if (tool === 'rect') drawRect(startX, startY, x - startX, y - startY);
+    else if (tool === 'circle') drawCircle(startX, startY, x, y);
+    else if (tool === 'arrow') drawArrow(startX, startY, x, y);
+  }
+}
+
+function onMouseUp(e) {
+  drawing = false;
+  snapshot = null;
+  ctx.beginPath();
+}
+
+function drawLine(x1,y1,x2,y2) {
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+}
+function drawRect(x,y,w,h) {
+  ctx.beginPath(); ctx.strokeRect(x,y,w,h);
+}
+function drawCircle(x1,y1,x2,y2) {
+  const rx = (x2-x1)/2, ry = (y2-y1)/2;
+  ctx.beginPath();
+  ctx.ellipse(x1+rx, y1+ry, Math.abs(rx), Math.abs(ry), 0, 0, 2*Math.PI);
+  ctx.stroke();
+}
+function drawArrow(x1,y1,x2,y2) {
+  const ang = Math.atan2(y2-y1, x2-x1);
+  const len = 12 + strokeWidth;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2 - len*Math.cos(ang-Math.PI/6), y2 - len*Math.sin(ang-Math.PI/6));
+  ctx.lineTo(x2 - len*Math.cos(ang+Math.PI/6), y2 - len*Math.sin(ang+Math.PI/6));
+  ctx.closePath(); ctx.fillStyle = strokeColor; ctx.fill();
+}
+
+// Text node — rich floating editor
+function addTextNode(x, y) {
+  // Only one text editor at a time
+  const existing = document.getElementById('text-editor-overlay');
+  if (existing) commitTextEditor(existing);
+
+  const fontSize = Math.max(12, 10 + strokeWidth * 2);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'text-editor-overlay';
+  overlay.style.cssText = `
+    position:absolute; left:${x}px; top:${y}px;
+    z-index:50; display:flex; flex-direction:column; gap:0;
+    min-width:180px; max-width:420px;
+    border-radius:8px;
+    box-shadow:0 4px 18px rgba(0,0,0,.13);
+    background:#fff;
+    border:2px solid ${strokeColor};
+    overflow:hidden;
+    user-select:none;
+  `;
+
+  // ---- toolbar ----
+  const toolbar = document.createElement('div');
+  toolbar.style.cssText = `
+    display:flex; align-items:center; gap:4px;
+    padding:4px 6px; background:#f5f4f0;
+    border-bottom:1px solid #e2e0d8;
+    cursor:grab; flex-shrink:0;
+  `;
+  toolbar.title = 'Drag to move';
+
+  // drag handle icon
+  const dragIcon = document.createElement('span');
+  dragIcon.textContent = '⠿';
+  dragIcon.style.cssText = 'color:#a8a59e;font-size:12px;margin-right:2px;cursor:grab;';
+  toolbar.appendChild(dragIcon);
+
+  // font size
+  const sizeInput = document.createElement('input');
+  sizeInput.type = 'number'; sizeInput.value = fontSize; sizeInput.min = 8; sizeInput.max = 120;
+  sizeInput.style.cssText = `width:44px;height:24px;border:1px solid #e2e0d8;border-radius:4px;
+    font-family:'DM Mono',monospace;font-size:11px;text-align:center;
+    padding:0 4px;outline:none;background:#fff;`;
+  sizeInput.title = 'Font size';
+  sizeInput.addEventListener('input', () => { ta.style.fontSize = sizeInput.value + 'px'; ta.focus(); });
+  toolbar.appendChild(sizeInput);
+
+  // bold toggle
+  let isBold = false;
+  const boldBtn = document.createElement('button');
+  boldBtn.textContent = 'B';
+  boldBtn.style.cssText = `width:24px;height:24px;border:1px solid #e2e0d8;border-radius:4px;
+    background:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:serif;
+    display:flex;align-items:center;justify-content:center;padding:0;`;
+  boldBtn.title = 'Bold';
+  boldBtn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    isBold = !isBold;
+    ta.style.fontWeight = isBold ? '700' : '400';
+    boldBtn.style.background = isBold ? '#eff4ff' : '#fff';
+    boldBtn.style.color = isBold ? '#2563eb' : '#1a1917';
+    boldBtn.style.borderColor = isBold ? '#bfcfff' : '#e2e0d8';
+    ta.focus();
+  });
+  toolbar.appendChild(boldBtn);
+
+  // italic toggle
+  let isItalic = false;
+  const italicBtn = document.createElement('button');
+  italicBtn.textContent = 'I';
+  italicBtn.style.cssText = `width:24px;height:24px;border:1px solid #e2e0d8;border-radius:4px;
+    background:#fff;font-style:italic;font-size:12px;cursor:pointer;font-family:serif;
+    display:flex;align-items:center;justify-content:center;padding:0;`;
+  italicBtn.title = 'Italic';
+  italicBtn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    isItalic = !isItalic;
+    ta.style.fontStyle = isItalic ? 'italic' : 'normal';
+    italicBtn.style.background = isItalic ? '#eff4ff' : '#fff';
+    italicBtn.style.color = isItalic ? '#2563eb' : '#1a1917';
+    italicBtn.style.borderColor = isItalic ? '#bfcfff' : '#e2e0d8';
+    ta.focus();
+  });
+  toolbar.appendChild(italicBtn);
+
+  // color swatch
+  const colorDot = document.createElement('div');
+  colorDot.style.cssText = `width:16px;height:16px;border-radius:50%;background:${strokeColor};
+    border:2px solid rgba(0,0,0,.15);flex-shrink:0;margin-left:2px;`;
+  colorDot.title = 'Text color (follows stroke color)';
+  toolbar.appendChild(colorDot);
+
+  const tbSpacer = document.createElement('div'); tbSpacer.style.flex = '1';
+  toolbar.appendChild(tbSpacer);
+
+  // ✓ commit button
+  const commitBtn = document.createElement('button');
+  commitBtn.innerHTML = '✓';
+  commitBtn.title = 'Commit (Enter)';
+  commitBtn.style.cssText = `width:24px;height:24px;border:none;border-radius:4px;
+    background:#2563eb;color:#fff;font-size:13px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;`;
+  commitBtn.addEventListener('mousedown', e => { e.preventDefault(); commitTextEditor(overlay); });
+  toolbar.appendChild(commitBtn);
+
+  // ✕ discard button
+  const discardBtn = document.createElement('button');
+  discardBtn.innerHTML = '✕';
+  discardBtn.title = 'Discard (Esc)';
+  discardBtn.style.cssText = `width:24px;height:24px;border:none;border-radius:4px;
+    background:#fef2f2;color:#dc2626;font-size:11px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;`;
+  discardBtn.addEventListener('mousedown', e => { e.preventDefault(); overlay.remove(); });
+  toolbar.appendChild(discardBtn);
+
+  overlay.appendChild(toolbar);
+
+  // ---- textarea ----
+  const ta = document.createElement('textarea');
+  ta.placeholder = 'Type here…';
+  ta.style.cssText = `
+    width:100%; min-height:64px; max-height:260px;
+    border:none; outline:none; resize:both;
+    padding:8px 10px;
+    font-family:'DM Sans',sans-serif;
+    font-size:${fontSize}px;
+    font-weight:400;
+    color:${strokeColor};
+    background:transparent;
+    line-height:1.45;
+    overflow-y:auto;
+  `;
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); overlay.remove(); }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); commitTextEditor(overlay); }
+  });
+  overlay.appendChild(ta);
+
+  // ---- hint ----
+  const hint = document.createElement('div');
+  hint.textContent = 'Ctrl+Enter to commit · Esc to cancel';
+  hint.style.cssText = `font-size:10px;color:#a8a59e;padding:3px 8px 4px;
+    background:#f5f4f0;border-top:1px solid #e2e0d8;font-family:'DM Sans',sans-serif;`;
+  overlay.appendChild(hint);
+
+  // Attach
+  const wrap = document.getElementById('canvas-wrap');
+  wrap.appendChild(overlay);
+  ta.focus();
+
+  // Keep overlay within bounds on resize
+  function clampOverlay() {
+    const wW = wrap.clientWidth, wH = wrap.clientHeight;
+    const oW = overlay.offsetWidth, oH = overlay.offsetHeight;
+    let l = parseInt(overlay.style.left), t2 = parseInt(overlay.style.top);
+    overlay.style.left = Math.max(0, Math.min(l, wW - oW)) + 'px';
+    overlay.style.top  = Math.max(0, Math.min(t2, wH - oH)) + 'px';
+  }
+
+  // ---- drag toolbar ----
+  let dragOx = 0, dragOy = 0, dragMx = 0, dragMy = 0, isDragging = false;
+  toolbar.addEventListener('mousedown', e => {
+    if (e.target === commitBtn || e.target === discardBtn || e.target === boldBtn ||
+        e.target === italicBtn || e.target === sizeInput) return;
+    isDragging = true;
+    toolbar.style.cursor = 'grabbing';
+    dragOx = overlay.offsetLeft; dragOy = overlay.offsetTop;
+    dragMx = e.clientX; dragMy = e.clientY;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', onDragTextEditor);
+  document.addEventListener('mouseup', onEndDragTextEditor);
+
+  function onDragTextEditor(e) {
+    if (!isDragging) return;
+    overlay.style.left = (dragOx + e.clientX - dragMx) + 'px';
+    overlay.style.top  = (dragOy + e.clientY - dragMy) + 'px';
+    clampOverlay();
+  }
+  function onEndDragTextEditor() {
+    isDragging = false;
+    toolbar.style.cursor = 'grab';
+    document.removeEventListener('mousemove', onDragTextEditor);
+    document.removeEventListener('mouseup', onEndDragTextEditor);
+  }
+
+  // store metadata on element for commit
+  overlay._getState = () => ({
+    x: parseInt(overlay.style.left),
+    y: parseInt(overlay.style.top),
+    text: ta.value,
+    fontSize: parseInt(sizeInput.value) || fontSize,
+    bold: isBold,
+    italic: isItalic,
+    color: strokeColor
+  });
+}
+
+function commitTextEditor(overlay) {
+  if (!overlay || !overlay._getState) { if (overlay) overlay.remove(); return; }
+  const s = overlay._getState();
+  overlay.remove();
+  if (!s.text.trim()) return;
+
+  pushUndo();
+  const lines = s.text.split('\n');
+  const weight = s.bold ? '700' : '400';
+  const style  = s.italic ? 'italic' : 'normal';
+  ctx.font = `${style} ${weight} ${s.fontSize}px 'DM Sans', sans-serif`;
+  ctx.fillStyle = s.color;
+  ctx.textBaseline = 'top';
+  lines.forEach((line, i) => {
+    ctx.fillText(line, s.x + 10, s.y + 36 + i * s.fontSize * 1.45);
+  });
+  ctx.textBaseline = 'alphabetic';
+}
+
+// ===== STICKIES =====
+const STICKY_COLORS = ['#fef9c3','#dcfce7','#dbeafe','#fce7f3','#f3e8ff','#ffedd5'];
+let stickyColorIdx = 0;
+
+function addSticky() {
+  const id = uid();
+  const color = STICKY_COLORS[stickyColorIdx % STICKY_COLORS.length];
+  stickyColorIdx++;
+  const s = { id, x: 60 + Math.random()*200, y: 60 + Math.random()*100, color, text: '' };
+  createStickyEl(s);
+}
+
+function createStickyEl(s) {
+  const el = document.createElement('div');
+  el.className = 'sticky';
+  el.dataset.id = s.id;
+  el.style.left = s.x + 'px';
+  el.style.top = s.y + 'px';
+  el.style.background = s.color;
+  if (s.w) el.style.width = s.w;
+  if (s.h) el.style.height = s.h;
+  el.innerHTML = `
+    <div class="sticky-header">
+      <span class="sticky-drag-handle">⠿</span>
+      <button class="sticky-del" onclick="this.closest('.sticky').remove()">✕</button>
+    </div>
+    <textarea placeholder="Write a note...">${esc(s.text || '')}</textarea>
+  `;
+  makeDraggable(el, document.getElementById('canvas-wrap'));
+  document.getElementById('canvas-wrap').appendChild(el);
+}
+
+// ===== IMAGES =====
+function triggerImgUpload() {
+  document.getElementById('img-upload').click();
+}
+
+function handleImgUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    createImgNodeEl({ id: uid(), x: 80 + Math.random()*100, y: 80 + Math.random()*60, src: ev.target.result });
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function createImgNodeEl(data) {
+  const el = document.createElement('div');
+  el.className = 'img-node';
+  el.dataset.id = data.id;
+  el.style.left = data.x + 'px';
+  el.style.top = data.y + 'px';
+  el.innerHTML = `
+    <img src="${data.src}" draggable="false">
+    <button class="img-del" onclick="this.closest('.img-node').remove()">✕</button>
+  `;
+  makeDraggable(el, document.getElementById('canvas-wrap'));
+  document.getElementById('canvas-wrap').appendChild(el);
+}
+
+// ===== DRAG UTIL =====
+function makeDraggable(el, container) {
+  let ox=0,oy=0,mx=0,my=0,isDragging=false;
+
+  const handle = el.querySelector('.sticky-drag-handle') || el;
+  handle.addEventListener('mousedown', startDrag);
+  handle.addEventListener('touchstart', e => { e.preventDefault(); startDrag(e.touches[0]); }, { passive: false });
+
+  function startDrag(e) {
+    isDragging = true;
+    mx = e.clientX; my = e.clientY;
+    ox = el.offsetLeft; oy = el.offsetTop;
+    el.style.zIndex = 100;
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchmove', t => doDrag(t.touches[0]), { passive: false });
+    document.addEventListener('touchend', endDrag);
+  }
+  function doDrag(e) {
+    if (!isDragging) return;
+    const dx = e.clientX - mx, dy = e.clientY - my;
+    el.style.left = (ox + dx) + 'px';
+    el.style.top = (oy + dy) + 'px';
+  }
+  function endDrag() {
+    isDragging = false;
+    el.style.zIndex = '';
+    document.removeEventListener('mousemove', doDrag);
+    document.removeEventListener('mouseup', endDrag);
+  }
+}
+
+// ===== KANBAN =====
+const COLS = [
+  { id: 'todo', labelKey: 'colTodo', color: '#6b6860' },
+  { id: 'inprogress', labelKey: 'colInProgress', color: '#d97706' },
+  { id: 'done', labelKey: 'colDone', color: '#16a34a' }
+];
+const LABEL_MAP = {
+  none: null,
+  blue: { text: 'Feature', cls: 'tag-blue' },
+  green: { text: 'Improvement', cls: 'tag-green' },
+  warn: { text: 'Design', cls: 'tag-warn' },
+  purple: { text: 'Research', cls: 'tag-purple' },
+  danger: { text: 'Bug', cls: 'tag-danger' }
+};
+
+let draggingCard = null;
+
+function renderKanban() {
+  const wrap = document.getElementById('kanban-wrap');
+  wrap.innerHTML = '';
+  const pid = state.activeProject;
+  const tasks = state.tasks[pid] || [];
+
+  COLS.forEach(col => {
+    const colTasks = tasks.filter(t => t.col === col.id);
+    const colEl = document.createElement('div');
+    colEl.className = 'kanban-col';
+    colEl.dataset.col = col.id;
+    colEl.innerHTML = `
+      <div class="kanban-col-header">
+        <div style="width:8px;height:8px;border-radius:50%;background:${col.color}"></div>
+        ${esc(t(col.labelKey))}
+        <span class="col-count">${colTasks.length}</span>
+      </div>
+      <div class="kanban-cards" id="col-${col.id}"></div>
+      <button class="add-task-btn" onclick="openAddTaskModal('${col.id}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        ${t('addTaskInCol')}
+      </button>
+    `;
+    wrap.appendChild(colEl);
+
+    const cardsEl = colEl.querySelector('.kanban-cards');
+    colTasks.forEach(t => {
+      const card = createTaskCard(t);
+      cardsEl.appendChild(card);
+    });
+
+    // Drop zone
+    cardsEl.addEventListener('dragover', e => { e.preventDefault(); cardsEl.classList.add('drag-over'); });
+    cardsEl.addEventListener('dragleave', () => cardsEl.classList.remove('drag-over'));
+    cardsEl.addEventListener('drop', e => {
+      e.preventDefault();
+      cardsEl.classList.remove('drag-over');
+      if (draggingCard) {
+        const taskId = draggingCard.dataset.taskId;
+        moveTask(taskId, col.id);
+      }
+    });
+  });
+}
+
+function createTaskCard(t) {
+  const card = document.createElement('div');
+  card.className = 'task-card';
+  card.draggable = true;
+  card.dataset.taskId = t.id;
+
+  const lbl = LABEL_MAP[t.label];
+  const labelHtml = lbl ? `<span class="tag ${lbl.cls}">${lbl.text}</span>` : '';
+  const dateHtml = t.date ? `<span class="task-date">${formatDate(t.date)}</span>` : '';
+
+  card.innerHTML = `
+    <div class="task-card-title">${esc(t.title)}</div>
+    ${t.desc ? `<div style="font-size:12.5px;color:var(--text2);margin-bottom:6px;line-height:1.4">${esc(t.desc)}</div>` : ''}
+    <div class="task-card-meta">${labelHtml}${dateHtml}
+      <button onclick="deleteTask('${t.id}')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text3);font-size:11px;padding:2px 5px;border-radius:4px" title="Delete">✕</button>
+    </div>
+  `;
+
+  card.addEventListener('dragstart', () => { draggingCard = card; card.classList.add('dragging'); });
+  card.addEventListener('dragend', () => { draggingCard = null; card.classList.remove('dragging'); });
+  return card;
+}
+
+function moveTask(taskId, newCol) {
+  const pid = state.activeProject;
+  if (!state.tasks[pid]) return;
+  const t = state.tasks[pid].find(x => x.id === taskId);
+  if (t) { t.col = newCol; }
+  renderKanban();
+  autosave();
+}
+
+function deleteTask(taskId) {
+  const pid = state.activeProject;
+  if (!state.tasks[pid]) return;
+  state.tasks[pid] = state.tasks[pid].filter(t => t.id !== taskId);
+  renderKanban();
+  autosave();
+}
+
+function openAddTaskModal(defaultCol) {
+  document.getElementById('task-title-input').value = '';
+  document.getElementById('task-desc-input').value = '';
+  document.getElementById('task-col-input').value = defaultCol || 'todo';
+  document.getElementById('task-label-input').value = 'none';
+  document.getElementById('task-date-input').value = '';
+  openModal('task-modal');
+  setTimeout(() => document.getElementById('task-title-input').focus(), 100);
+}
+
+function saveTask() {
+  const title = document.getElementById('task-title-input').value.trim();
+  if (!title) { document.getElementById('task-title-input').focus(); return; }
+  const pid = state.activeProject;
+  if (!state.tasks[pid]) state.tasks[pid] = [];
+  state.tasks[pid].push({
+    id: uid(),
+    title,
+    desc: document.getElementById('task-desc-input').value.trim(),
+    col: document.getElementById('task-col-input').value,
+    label: document.getElementById('task-label-input').value,
+    date: document.getElementById('task-date-input').value
+  });
+  closeModal('task-modal');
+  renderKanban();
+  autosave();
+  toast(t('toastTaskAdded'));
+}
+
+// ===== CALENDAR =====
+let calDate = new Date();
+
+function renderCalendar() {
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  const locale = lang === 'ro' ? 'ro-RO' : 'en-US';
+  document.getElementById('cal-title').textContent =
+    calDate.toLocaleString(locale, { month: 'long' }) + ' ' + y;
+
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  const firstDay = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const today = new Date();
+
+  // Leading days from prev month
+  const prevDays = new Date(y, m, 0).getDate();
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const d = createCalDay(new Date(y, m-1, prevDays-i), true, today);
+    grid.appendChild(d);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    grid.appendChild(createCalDay(new Date(y, m, d), false, today));
+  }
+  // Fill rest
+  const total = firstDay + daysInMonth;
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= remaining; d++) {
+    grid.appendChild(createCalDay(new Date(y, m+1, d), true, today));
+  }
+}
+
+function createCalDay(date, otherMonth, today) {
+  const el = document.createElement('div');
+  el.className = 'cal-day' + (otherMonth ? ' other-month' : '');
+  const isToday = date.toDateString() === today.toDateString();
+  if (isToday) el.classList.add('today');
+
+  const dateStr = date.toISOString().split('T')[0];
+  const dayNum = document.createElement('div');
+  dayNum.className = 'cal-day-num';
+  dayNum.textContent = date.getDate();
+  el.appendChild(dayNum);
+
+  // Events
+  const evs = state.events.filter(e => e.date === dateStr);
+  evs.forEach(ev => {
+    const evEl = document.createElement('div');
+    evEl.className = `cal-event ${ev.color}`;
+    evEl.textContent = ev.name;
+    evEl.onclick = e => { e.stopPropagation(); showEventDetail(ev.id); };
+    el.appendChild(evEl);
+  });
+
+  el.onclick = () => {
+    document.getElementById('event-date-input').value = dateStr;
+    openModal('event-modal');
+    setTimeout(() => document.getElementById('event-name-input').focus(), 100);
+  };
+
+  return el;
+}
+
+function calPrev() { calDate = new Date(calDate.getFullYear(), calDate.getMonth()-1, 1); renderCalendar(); }
+function calNext() { calDate = new Date(calDate.getFullYear(), calDate.getMonth()+1, 1); renderCalendar(); }
+
+function openAddEventModal() {
+  document.getElementById('event-name-input').value = '';
+  document.getElementById('event-date-input').value = '';
+  document.getElementById('event-color-input').value = 'tag-blue';
+  openModal('event-modal');
+}
+
+function saveEvent() {
+  const name = document.getElementById('event-name-input').value.trim();
+  const date = document.getElementById('event-date-input').value;
+  if (!name || !date) { toast(t('toastFillEventFields')); return; }
+  state.events.push({
+    id: uid(), name, date,
+    color: document.getElementById('event-color-input').value
+  });
+  closeModal('event-modal');
+  renderCalendar();
+  autosave();
+  toast(t('toastEventAdded'));
+}
+
+function showEventDetail(id) {
+  const ev = state.events.find(e => e.id === id);
+  if (!ev) return;
+  currentEventId = id;
+  document.getElementById('event-detail-name').textContent = ev.name;
+  document.getElementById('event-detail-date').textContent = formatDateFull(ev.date);
+  openModal('event-detail-modal');
+}
+
+function deleteCurrentEvent() {
+  state.events = state.events.filter(e => e.id !== currentEventId);
+  closeModal('event-detail-modal');
+  renderCalendar();
+  autosave();
+  toast(t('toastEventDeleted'));
+}
+
+// ===== SAVE / LOAD =====
+function autosave() {
+  saveBoardState();
+  localStorage.setItem('miniplansa_data', JSON.stringify(state));
+}
+
+function saveData() {
+  saveBoardState();
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'miniplansa.miniplansa';
+  a.click();
+  toast(t('toastSaved'));
+}
+
+function loadData() {
+  document.getElementById('file-input').click();
+}
+
+function handleFileLoad(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      state = data;
+      if (!state.boards) state.boards = {};
+      if (!state.tasks) state.tasks = {};
+      if (!state.events) state.events = [];
+      renderProjects();
+      if (state.activeProject) setActiveProject(state.activeProject);
+      renderKanban();
+      renderCalendar();
+      autosave();
+      toast(t('toastLoaded'));
+    } catch(err) {
+      toast(t('toastLoadFail'));
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ===== VIEW SWITCHING =====
+let mathInitialized = false;
+function switchView(v) {
+  // Commit any open text editor
+  const existing = document.getElementById('text-editor-overlay');
+  if (existing) commitTextEditor(existing);
+  currentView = v;
+  ['board','tasks','calendar','math'].forEach(name => {
+    const view = document.getElementById(name + '-view');
+    const tab = document.getElementById('tab-' + name);
+    if (view) view.classList.toggle('active', name === v);
+    if (tab) tab.classList.toggle('active', name === v);
+  });
+  if (v === 'board') { resizeCanvas(); loadBoardForProject(state.activeProject); }
+  if (v === 'tasks') renderKanban();
+  if (v === 'calendar') renderCalendar();
+  if (v === 'math') {
+    if (!mathInitialized) {
+      buildCalcGrid();
+      buildUnitConverter();
+      renderFormula();
+      mathInitialized = true;
+      setTimeout(drawGraph, 50);
+    }
+  }
+}
+
+// ===== MODAL UTIL =====
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+// ===== UTILS =====
+function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function formatDate(d) {
+  if (!d) return '';
+  const p = d.split('-');
+  return `${p[2]}/${p[1]}/${p[0].slice(2)}`;
+}
+function formatDateFull(d) {
+  if (!d) return '';
+  const locale = lang === 'ro' ? 'ro-RO' : 'en-US';
+  return new Date(d + 'T12:00').toLocaleDateString(locale, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== MATH: CALCULATOR =====
+const CALC_BUTTONS = [
+  // row 1
+  {l:'sin',v:'Math.sin(',cls:'fn'},{l:'cos',v:'Math.cos(',cls:'fn'},{l:'tan',v:'Math.tan(',cls:'fn'},{l:'log',v:'Math.log10(',cls:'fn'},{l:'ln',v:'Math.log(',cls:'fn'},
+  // row 2
+  {l:'√',v:'Math.sqrt(',cls:'fn'},{l:'x²',v:'**2',cls:'fn'},{l:'xʸ',v:'**',cls:'fn'},{l:'π',v:'Math.PI',cls:'fn'},{l:'e',v:'Math.E',cls:'fn'},
+  // row 3
+  {l:'(',v:'('},{l:')',v:')'},{l:'%',v:'%',cls:'op'},{l:'C',v:'C',cls:'clear'},{l:'⌫',v:'⌫',cls:'clear'},
+  // row 4
+  {l:'7',v:'7'},{l:'8',v:'8'},{l:'9',v:'9'},{l:'÷',v:'/',cls:'op'},{l:'±',v:'neg',cls:'op'},
+  // row 5
+  {l:'4',v:'4'},{l:'5',v:'5'},{l:'6',v:'6'},{l:'×',v:'*',cls:'op'},{l:'.',v:'.'},
+  // row 6
+  {l:'1',v:'1'},{l:'2',v:'2'},{l:'3',v:'3'},{l:'−',v:'-',cls:'op'},{l:'',v:'',cls:'span2 eq',skip:true},
+  // row 7
+  {l:'0',v:'0',cls:'span2'},{l:'',v:'',skip:true},{l:'',v:'',skip:true},{l:'+',v:'+',cls:'op'},{l:'=',v:'=',cls:'eq'},
+];
+
+let calcExpr = '';
+let calcLastResult = '';
+
+function buildCalcGrid() {
+  const grid = document.getElementById('calc-grid');
+  grid.innerHTML = '';
+  // rebuild properly
+  const rows = [
+    [{l:'sin(',v:'Math.sin(',c:'fn'},{l:'cos(',v:'Math.cos(',c:'fn'},{l:'tan(',v:'Math.tan(',c:'fn'},{l:'log(',v:'Math.log10(',c:'fn'},{l:'ln(',v:'Math.log(',c:'fn'}],
+    [{l:'√(',v:'Math.sqrt(',c:'fn'},{l:'x²',v:'**2',c:'fn'},{l:'xʸ',v:'**',c:'fn'},{l:'π',v:'Math.PI',c:'fn'},{l:'e',v:'Math.E',c:'fn'}],
+    [{l:'(',v:'(',c:''},{l:')',v:')',c:''},{l:'%',v:'%',c:'op'},{l:'C',v:'C',c:'clear'},{l:'⌫',v:'⌫',c:'clear'}],
+    [{l:'7',v:'7',c:''},{l:'8',v:'8',c:''},{l:'9',v:'9',c:''},{l:'÷',v:'/',c:'op'},{l:'±',v:'neg',c:'op'}],
+    [{l:'4',v:'4',c:''},{l:'5',v:'5',c:''},{l:'6',v:'6',c:''},{l:'×',v:'*',c:'op'},{l:'.',v:'.',c:''}],
+    [{l:'1',v:'1',c:''},{l:'2',v:'2',c:''},{l:'3',v:'3',c:''},{l:'−',v:'-',c:'op'},{l:'=',v:'=',c:'eq'}],
+    [{l:'0',v:'0',c:'span2'},{l:'',v:'',c:'',skip:true},{l:'00',v:'00',c:''},{l:'+',v:'+',c:'op'},{l:'ANS',v:'ANS',c:'fn'}],
+  ];
+  rows.forEach(row => {
+    row.forEach(btn => {
+      if (btn.skip) return;
+      const el = document.createElement('button');
+      el.className = 'calc-btn' + (btn.c ? ' '+btn.c : '');
+      el.textContent = btn.l;
+      el.onclick = () => calcPress(btn.v);
+      grid.appendChild(el);
+    });
+  });
+}
+
+function calcPress(v) {
+  if (v === 'C') { calcExpr = ''; updateCalcDisplay('0'); return; }
+  if (v === '⌫') { calcExpr = calcExpr.slice(0, -1); updateCalcDisplay(calcExpr || '0'); return; }
+  if (v === 'neg') { calcExpr = calcExpr ? `-(${calcExpr})` : ''; updateCalcDisplay(calcExpr || '0'); return; }
+  if (v === 'ANS') { calcExpr += calcLastResult; updateCalcDisplay(calcExpr); return; }
+  if (v === '=') {
+    try {
+      const safe = calcExpr.replace(/[^0-9+\-*/.()%eMathsqrtcinalogePIbex\s]/g, '');
+      // eslint-disable-next-line no-new-func
+      const result = Function('"use strict"; return (' + calcExpr + ')')();
+      const resultStr = Number.isFinite(result) ? +result.toPrecision(12) + '' : 'Error';
+      calcLastResult = resultStr;
+      document.getElementById('calc-expr').textContent = calcExpr + ' =';
+      document.getElementById('calc-result').textContent = resultStr;
+      calcExpr = resultStr === 'Error' ? '' : resultStr;
+    } catch(e) {
+      document.getElementById('calc-result').textContent = 'Error';
+      document.getElementById('calc-expr').textContent = calcExpr;
+      calcExpr = '';
+    }
+    return;
+  }
+  calcExpr += v;
+  updateCalcDisplay(calcExpr);
+}
+
+function updateCalcDisplay(result) {
+  document.getElementById('calc-expr').textContent = calcExpr;
+  // Live eval
+  try {
+    if (calcExpr && !calcExpr.match(/[\+\-\*\/\(]$/)) {
+      // eslint-disable-next-line no-new-func
+      const r = Function('"use strict"; return (' + calcExpr + ')')();
+      if (Number.isFinite(r)) document.getElementById('calc-result').textContent = +r.toPrecision(12) + '';
+      else document.getElementById('calc-result').textContent = result;
+    } else {
+      document.getElementById('calc-result').textContent = result || '0';
+    }
+  } catch(e) {
+    document.getElementById('calc-result').textContent = result || '0';
+  }
+}
+
+// ===== MATH: FORMULA RENDERER =====
+let formulaHistory = [];
+
+function renderFormula() {
+  const inp = document.getElementById('formula-input').value.trim();
+  const out = document.getElementById('formula-output');
+  if (!inp) { out.innerHTML = '<span style="color:var(--text3);font-size:13px">Preview will appear here</span>'; return; }
+  try {
+    out.innerHTML = katex.renderToString(inp, { throwOnError: true, displayMode: true });
+  } catch(e) {
+    out.innerHTML = `<span class="formula-error">${e.message.split('\n')[0]}</span>`;
+  }
+}
+
+function addFormulaToHistory() {
+  const inp = document.getElementById('formula-input').value.trim();
+  if (!inp) return;
+  try {
+    katex.renderToString(inp, { throwOnError: true });
+    if (!formulaHistory.includes(inp)) {
+      formulaHistory.unshift(inp);
+      if (formulaHistory.length > 8) formulaHistory.pop();
+      renderFormulaHistory();
+    }
+  } catch(e) {}
+}
+
+function renderFormulaHistory() {
+  const wrap = document.getElementById('formula-history');
+  wrap.innerHTML = '';
+  formulaHistory.forEach(f => {
+    const el = document.createElement('div');
+    el.className = 'formula-hist-item';
+    try { el.innerHTML = katex.renderToString(f, { throwOnError: true, displayMode: false }); } catch(e) { el.textContent = f; }
+    el.onclick = () => { document.getElementById('formula-input').value = f; renderFormula(); };
+    wrap.appendChild(el);
+  });
+}
+
+// ===== MATH: GRAPHER =====
+let graphChart = null;
+
+function drawGraph() {
+  const fnStr = document.getElementById('graph-fn').value.trim();
+  const xmin = parseFloat(document.getElementById('graph-xmin').value) || -10;
+  const xmax = parseFloat(document.getElementById('graph-xmax').value) || 10;
+  const errEl = document.getElementById('graph-error');
+  errEl.textContent = '';
+
+  const canvas = document.getElementById('graph-canvas');
+  const wrap = document.getElementById('graph-canvas-wrap');
+  canvas.width = wrap.clientWidth || 400;
+  canvas.height = wrap.clientHeight || 240;
+
+  const ctx2 = canvas.getContext('2d');
+  ctx2.clearRect(0, 0, canvas.width, canvas.height);
+
+  const W = canvas.width, H = canvas.height;
+  const steps = Math.max(400, W);
+  const xs = [], ys = [];
+
+  try {
+    // eslint-disable-next-line no-new-func
+    const fn = new Function('x', '"use strict"; with(Math){return ' + fnStr + ';}');
+    let hasErr = false;
+    for (let i = 0; i <= steps; i++) {
+      const x = xmin + (xmax - xmin) * i / steps;
+      xs.push(x);
+      try {
+        const y = fn(x);
+        ys.push(Number.isFinite(y) ? y : null);
+      } catch(e) { ys.push(null); }
+    }
+    if (ys.every(y => y === null)) throw new Error('Function returned no values');
+  } catch(e) {
+    errEl.textContent = '⚠ ' + e.message;
+    return;
+  }
+
+  const validYs = ys.filter(y => y !== null);
+  const ymin = Math.min(...validYs), ymax = Math.max(...validYs);
+  const yrng = ymax - ymin || 1;
+  const xrng = xmax - xmin;
+  const pad = 30;
+
+  // to canvas coords
+  function toCanvasX(x) { return pad + (x - xmin) / xrng * (W - 2*pad); }
+  function toCanvasY(y) { return H - pad - (y - ymin) / yrng * (H - 2*pad); }
+
+  // Grid
+  ctx2.strokeStyle = '#e2e0d8'; ctx2.lineWidth = 1;
+  const xTicks = 5, yTicks = 4;
+  for (let i = 0; i <= xTicks; i++) {
+    const x = xmin + i * xrng / xTicks;
+    const cx = toCanvasX(x);
+    ctx2.beginPath(); ctx2.moveTo(cx, pad); ctx2.lineTo(cx, H - pad); ctx2.stroke();
+    ctx2.fillStyle = '#a8a59e'; ctx2.font = '10px DM Mono, monospace'; ctx2.textAlign = 'center';
+    ctx2.fillText(x.toPrecision(3), cx, H - pad + 14);
+  }
+  for (let i = 0; i <= yTicks; i++) {
+    const y = ymin + i * yrng / yTicks;
+    const cy = toCanvasY(y);
+    ctx2.beginPath(); ctx2.moveTo(pad, cy); ctx2.lineTo(W - pad, cy); ctx2.stroke();
+    ctx2.fillStyle = '#a8a59e'; ctx2.font = '10px DM Mono, monospace'; ctx2.textAlign = 'right';
+    ctx2.fillText(y.toPrecision(3), pad - 4, cy + 4);
+  }
+
+  // Axes
+  if (ymin <= 0 && ymax >= 0) {
+    const cy = toCanvasY(0);
+    ctx2.strokeStyle = '#ccc9bf'; ctx2.lineWidth = 1.5;
+    ctx2.beginPath(); ctx2.moveTo(pad, cy); ctx2.lineTo(W - pad, cy); ctx2.stroke();
+  }
+  if (xmin <= 0 && xmax >= 0) {
+    const cx = toCanvasX(0);
+    ctx2.strokeStyle = '#ccc9bf'; ctx2.lineWidth = 1.5;
+    ctx2.beginPath(); ctx2.moveTo(cx, pad); ctx2.lineTo(cx, H - pad); ctx2.stroke();
+  }
+
+  // Curve
+  ctx2.strokeStyle = '#2563eb'; ctx2.lineWidth = 2.2; ctx2.lineJoin = 'round';
+  ctx2.beginPath();
+  let penDown = false;
+  for (let i = 0; i < xs.length; i++) {
+    if (ys[i] === null) { penDown = false; continue; }
+    const cx = toCanvasX(xs[i]), cy = toCanvasY(ys[i]);
+    if (!penDown) { ctx2.moveTo(cx, cy); penDown = true; }
+    else ctx2.lineTo(cx, cy);
+  }
+  ctx2.stroke();
+
+  // Label
+  ctx2.fillStyle = '#6b6860'; ctx2.font = '11px DM Sans, sans-serif'; ctx2.textAlign = 'left';
+  ctx2.fillText('f(x) = ' + fnStr, pad + 4, pad - 8);
+}
+
+// ===== MATH: UNIT CONVERTER =====
+const UNIT_CATS = {
+  Length: {
+    m: 1, km: 1e3, cm: 0.01, mm: 0.001, mi: 1609.344, ft: 0.3048, 'in': 0.0254, yd: 0.9144, nm: 1e-9, μm: 1e-6
+  },
+  Mass: {
+    kg: 1, g: 0.001, mg: 1e-6, lb: 0.453592, oz: 0.028350, t: 1000, stone: 6.35029
+  },
+  Temperature: { C: 'special', F: 'special', K: 'special' },
+  Area: {
+    'm²': 1, 'km²': 1e6, 'cm²': 1e-4, 'ft²': 0.092903, 'in²': 6.4516e-4, ha: 1e4, acre: 4046.86
+  },
+  Volume: {
+    L: 1, mL: 0.001, 'cm³': 0.001, 'm³': 1000, gal: 3.78541, qt: 0.946353, pt: 0.473176, 'fl oz': 0.0295735, cup: 0.236588
+  },
+  Speed: {
+    'm/s': 1, 'km/h': 0.277778, mph: 0.44704, knot: 0.514444, 'ft/s': 0.3048
+  },
+  Time: {
+    s: 1, ms: 0.001, min: 60, h: 3600, day: 86400, week: 604800, month: 2629800, year: 31557600
+  },
+  Energy: {
+    J: 1, kJ: 1000, cal: 4.184, kcal: 4184, Wh: 3600, kWh: 3600000, eV: 1.60218e-19, BTU: 1055.06
+  },
+  Pressure: {
+    Pa: 1, kPa: 1000, MPa: 1e6, bar: 1e5, atm: 101325, psi: 6894.76, mmHg: 133.322
+  },
+  Data: {
+    B: 1, KB: 1024, MB: 1048576, GB: 1073741824, TB: 1099511627776, bit: 0.125, Kbit: 128, Mbit: 131072, Gbit: 134217728
+  }
+};
+
+let activeCat = 'Length';
+
+function buildUnitConverter() {
+  const tabs = document.getElementById('unit-cat-tabs');
+  tabs.innerHTML = '';
+  Object.keys(UNIT_CATS).forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'unit-cat-btn' + (cat === activeCat ? ' active' : '');
+    btn.textContent = cat;
+    btn.onclick = () => { activeCat = cat; buildUnitConverter(); convertUnit(); };
+    tabs.appendChild(btn);
+  });
+  // Populate selects
+  const units = Object.keys(UNIT_CATS[activeCat]);
+  ['unit-from-sel','unit-to-sel'].forEach((selId, idx) => {
+    const sel = document.getElementById(selId);
+    const prev = sel.value;
+    sel.innerHTML = '';
+    units.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u; opt.textContent = u;
+      sel.appendChild(opt);
+    });
+    if (units.includes(prev)) sel.value = prev;
+    else sel.value = units[idx === 1 ? Math.min(1, units.length-1) : 0];
+  });
+  convertUnit();
+}
+
+function convertUnit() {
+  const fromVal = parseFloat(document.getElementById('unit-from-val').value);
+  const fromUnit = document.getElementById('unit-from-sel').value;
+  const toUnit = document.getElementById('unit-to-sel').value;
+  const cat = UNIT_CATS[activeCat];
+  let result, hint = '';
+
+  if (activeCat === 'Temperature') {
+    result = convertTemp(fromVal, fromUnit, toUnit);
+    hint = `${fromUnit} → ${toUnit}`;
+  } else {
+    const fromFactor = cat[fromUnit], toFactor = cat[toUnit];
+    result = fromVal * fromFactor / toFactor;
+    hint = `1 ${fromUnit} = ${(fromFactor/toFactor).toPrecision(5)} ${toUnit}`;
+  }
+
+  const resultEl = document.getElementById('unit-result');
+  resultEl.textContent = isNaN(result) ? '—' : +result.toPrecision(8) + '';
+  document.getElementById('unit-result-label').textContent = toUnit;
+  document.getElementById('unit-formula-hint').textContent = hint;
+}
+
+function convertTemp(val, from, to) {
+  let c;
+  if (from === 'C') c = val;
+  else if (from === 'F') c = (val - 32) * 5/9;
+  else c = val - 273.15;
+  if (to === 'C') return c;
+  if (to === 'F') return c * 9/5 + 32;
+  return c + 273.15;
+}
+
+function swapUnits() {
+  const a = document.getElementById('unit-from-sel').value;
+  const b = document.getElementById('unit-to-sel').value;
+  document.getElementById('unit-from-sel').value = b;
+  document.getElementById('unit-to-sel').value = a;
+  convertUnit();
+}
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
