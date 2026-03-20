@@ -83,6 +83,15 @@ The only external resource loaded is the **DM Sans / DM Mono** font from Google 
 
 ---
 
+## Supported Devices
+
+1. Android phone/tablet
+2. iPhone, iPad or Mac/MacBook
+3. PC/Laptop
+4. Interactive Board (ex: Samsung)
+
+---
+
 ## 🛠 Tech Stack
 
 | Layer | Technology |
